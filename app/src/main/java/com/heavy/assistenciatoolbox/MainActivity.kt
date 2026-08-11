@@ -30,13 +30,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonSend: Button
     private lateinit var chatAdapter: ChatAdapter
     private val messageList = mutableListOf<Message>()
-    
+
     private val isDarkTheme: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
+
         findViewById<TextView>(R.id.txtAppName).text = "Toolbox Assistência Pro"
 
         recyclerViewChat = findViewById(R.id.recyclerViewChat)
@@ -47,19 +47,16 @@ class MainActivity : AppCompatActivity() {
         initFinancialModules()
     }
 
-    /**
-     * Persistência Segura com EncryptedSharedPreferences (AES-256 GCM)
-     */
     private fun getEncryptedPreferences(): SharedPreferences {
         val masterKey = MasterKey.Builder(this)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
+           .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+           .build()
 
         return EncryptedSharedPreferences.create(
             this,
             "encrypted_app_secrets",
             masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SKEY,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
     }
@@ -73,13 +70,8 @@ class MainActivity : AppCompatActivity() {
         return getEncryptedPreferences().getString("PAT_TOKEN", null)
     }
 
-    /**
-     * Módulo de Gestão Financeira, Metas e Estatísticas
-     */
     private fun initFinancialModules() {
-        // Exemplo de inclusão de meta inicial
-        messageList.add(Message("Finance Pro", "💰 Meta Ativa: Reserva de Emergência (R$ 5.000,00)
-📊 Clique em Copiar PIX para depositar na meta."))
+        messageList.add(Message("Finance Pro", "💰 Meta Ativa: Reserva de Emergência (R$ 5.000,00)\n📊 Clique em Copiar PIX para depositar na meta."))
     }
 
     fun copyPixKeyToClipboard(pixKey: String = "00020126360014BR.GOV.BCB.PIX0114+5511999999999520400005303986540510.005802BR5915Heavy Financeiro6009SAO PAULO62070503***6304E2CA") {
@@ -91,15 +83,10 @@ class MainActivity : AppCompatActivity() {
 
     fun exportTransactionsToCsv(): String {
         val csv = StringBuilder()
-        csv.append("Data,Categoria,Descricao,Valor
-")
-        csv.append("2026-08-01,Alimentacao,Mercado Central,350.50
-")
-        csv.append("2026-08-02,Moradia,Aluguel Residencial,1500.00
-")
-        csv.append("2026-08-03,Investimento,Aporte Meta PIX,200.00
-")
-        
+        csv.append("Data,Categoria,Descricao,Valor\n")
+        csv.append("2026-08-01,Alimentacao,Mercado Central,350.50\n")
+        csv.append("2026-08-02,Moradia,Aluguel Residencial,1500.00\n")
+        csv.append("2026-08-03,Investimento,Aporte Meta PIX,200.00\n")
         Toast.makeText(this, "Planilha CSV gerada com sucesso!", Toast.LENGTH_SHORT).show()
         return csv.toString()
     }
@@ -128,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             messageList.add(Message("Você", messageText))
             chatAdapter.notifyItemInserted(messageList.size - 1)
             recyclerViewChat.scrollToPosition(messageList.size - 1)
-            editTextMessage.setText("") 
+            editTextMessage.setText("")
 
             if (messageText.lowercase().contains("pix")) {
                 copyPixKeyToClipboard()
@@ -171,7 +158,7 @@ class MainActivity : AppCompatActivity() {
                 textViewSender.text = message.sender.uppercase()
 
                 val layoutParams = messageCard.layoutParams as ConstraintLayout.LayoutParams
-                
+
                 if (message.sender == "Você") {
                     messageCard.setCardBackgroundColor(ContextCompat.getColor(itemView.context, if (isDarkTheme) R.color.chat_bubble_user_dark else R.color.chat_bubble_user_light))
                     textViewMessage.setTextColor(ContextCompat.getColor(itemView.context, R.color.chat_text_user))
@@ -183,7 +170,7 @@ class MainActivity : AppCompatActivity() {
                     textViewSender.setTextColor(ContextCompat.getColor(itemView.context, if (isDarkTheme) R.color.chat_sender_ai_dark else R.color.chat_sender_ai_light))
                     layoutParams.horizontalBias = 0.0f
                 }
-                
+
                 messageCard.layoutParams = layoutParams
             }
         }
