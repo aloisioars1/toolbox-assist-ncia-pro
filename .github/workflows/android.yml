@@ -70,8 +70,8 @@ jobs:
         run: |
           mkdir -p app
           echo "$KEYSTORE_BASE64" | base64 --decode > app/release.keystore
-      - name: Run Unit Tests
-        run: ./gradlew test --continue || echo "Sem testes, continuando..."
+      - - name: Run Unit Tests
+  run: ./gradlew test --continue || true
       - name: Build Debug APK
         run: ./gradlew assembleDebug
       - name: Build Release APK
