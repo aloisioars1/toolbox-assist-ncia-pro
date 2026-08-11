@@ -27,8 +27,13 @@ jobs:
         with:
           validate-wrappers: false
 
-      - name: Grant Execute Permission for Gradlew
-        run: chmod +x gradlew
+      - name: Grant Execute Permission for Gradlew & Ensure Wrapper JAR
+        run: |
+          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ] || [ ! -s "gradle/wrapper/gradle-wrapper.jar" ]; then
+            echo "⚡ gradle-wrapper.jar ausente ou corrompido. Gerando wrapper oficial com o Gradle do runner..."
+            gradle wrapper --gradle-version 8.5 --distribution-type bin
+          fi
+          chmod +x gradlew
 
       - name: Run Ktlint Code Format & Style Check (Google Style Guide)
         run: |
@@ -66,8 +71,13 @@ jobs:
         with:
           validate-wrappers: false
 
-      - name: Grant Execute Permission for Gradlew
-        run: chmod +x gradlew
+      - name: Grant Execute Permission for Gradlew & Ensure Wrapper JAR
+        run: |
+          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ] || [ ! -s "gradle/wrapper/gradle-wrapper.jar" ]; then
+            echo "⚡ gradle-wrapper.jar ausente ou corrompido. Gerando wrapper oficial com o Gradle do runner..."
+            gradle wrapper --gradle-version 8.5 --distribution-type bin
+          fi
+          chmod +x gradlew
 
       - name: Decode Release Keystore (App Signing)
         if: env.KEYSTORE_BASE64 != ''
